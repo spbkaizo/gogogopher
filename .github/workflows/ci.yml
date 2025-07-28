@@ -118,7 +118,33 @@ jobs:
           IMAGE_TAG="${{ github.ref_name }}"
         fi
         echo "Testing image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${IMAGE_TAG}"
-        docker run --rm -d --name gogogopher-test -p 8070:70 ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${IMAGE_TAG}
-        sleep 10
-        docker exec gogogopher-test nc -z localhost 70 || exit 1
+        
+        # Start container
+        CONTAINER_ID=$(docker run --rm -d --name gogogopher-test -p 8070:70 ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${IMAGE_TAG})
+        echo "Container started with ID: $CONTAINER_ID"
+        
+        # Wait for startup
+        echo "Waiting for server to start..."
+        sleep 15
+        
+        # Check if container is still running
+        if ! docker ps | grep -q gogogopher-test; then
+          echo "Container has stopped! Checking logs:"
+          docker logs gogogopher-test
+          exit 1
+        fi
+        
+        # Test connectivity
+        echo "Testing connectivity..."
+        if docker exec gogogopher-test nc -z localhost 70; then
+          echo "✅ Gopher server is responding on port 70"
+        else
+          echo "❌ Gopher server is not responding on port 70"
+          echo "Container logs:"
+          docker logs gogogopher-test
+          docker stop gogogopher-test
+          exit 1
+        fi
+        
         docker stop gogogopher-test
+        echo "✅ Docker image test passed"
