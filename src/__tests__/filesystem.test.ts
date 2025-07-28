@@ -5,6 +5,13 @@ import * as path from 'path';
 import * as fs from 'fs/promises';
 import * as os from 'os';
 
+// Test interface to access private methods with proper typing
+interface FileSystemHandlerTestInterface {
+  isBinaryFile(extension: string): boolean;
+  formatDisplayString(filename: string, isDirectory: boolean): string;
+  getParentSelector(dirPath: string): string;
+}
+
 describe('FileSystemHandler', () => {
   let fsHandler: FileSystemHandler;
   let tempDir: string;
@@ -230,7 +237,7 @@ describe('FileSystemHandler', () => {
       const binaryExtensions = ['.jpg', '.png', '.gif', '.zip', '.exe', '.pdf'];
       
       binaryExtensions.forEach(ext => {
-        const isBinary = (fsHandler as any).isBinaryFile(ext);
+        const isBinary = (fsHandler as unknown as FileSystemHandlerTestInterface).isBinaryFile(ext);
         expect(isBinary).toBe(true);
       });
     });
@@ -239,7 +246,7 @@ describe('FileSystemHandler', () => {
       const textExtensions = ['.txt', '.md', '.json', '.yaml', '.css', '.html'];
       
       textExtensions.forEach(ext => {
-        const isBinary = (fsHandler as any).isBinaryFile(ext);
+        const isBinary = (fsHandler as unknown as FileSystemHandlerTestInterface).isBinaryFile(ext);
         expect(isBinary).toBe(false);
       });
     });
@@ -247,18 +254,18 @@ describe('FileSystemHandler', () => {
 
   describe('Display String Formatting', () => {
     test('should format directory names with trailing slash', () => {
-      const formatted = (fsHandler as any).formatDisplayString('testdir', true);
+      const formatted = (fsHandler as unknown as FileSystemHandlerTestInterface).formatDisplayString('testdir', true);
       expect(formatted).toBe('testdir/');
     });
 
     test('should format file names without trailing slash', () => {
-      const formatted = (fsHandler as any).formatDisplayString('testfile.txt', false);
+      const formatted = (fsHandler as unknown as FileSystemHandlerTestInterface).formatDisplayString('testfile.txt', false);
       expect(formatted).toBe('testfile.txt');
     });
 
     test('should truncate long filenames', () => {
       const longName = 'a'.repeat(100);
-      const formatted = (fsHandler as any).formatDisplayString(longName, false);
+      const formatted = (fsHandler as unknown as FileSystemHandlerTestInterface).formatDisplayString(longName, false);
       
       expect(formatted.length).toBeLessThanOrEqual(67); // Max length
       expect(formatted.endsWith('...')).toBe(true);
@@ -266,7 +273,7 @@ describe('FileSystemHandler', () => {
 
     test('should not truncate short filenames', () => {
       const shortName = 'short.txt';
-      const formatted = (fsHandler as any).formatDisplayString(shortName, false);
+      const formatted = (fsHandler as unknown as FileSystemHandlerTestInterface).formatDisplayString(shortName, false);
       
       expect(formatted).toBe(shortName);
     });
@@ -275,20 +282,20 @@ describe('FileSystemHandler', () => {
   describe('Parent Selector Generation', () => {
     test('should generate correct parent selector for subdirectory', () => {
       const subDir = path.join(tempDir, 'subdir');
-      const parentSelector = (fsHandler as any).getParentSelector(subDir);
+      const parentSelector = (fsHandler as unknown as FileSystemHandlerTestInterface).getParentSelector(subDir);
       
       expect(parentSelector).toBe('/');
     });
 
     test('should generate correct parent selector for nested directory', () => {
       const nestedDir = path.join(tempDir, 'nested', 'deep');
-      const parentSelector = (fsHandler as any).getParentSelector(nestedDir);
+      const parentSelector = (fsHandler as unknown as FileSystemHandlerTestInterface).getParentSelector(nestedDir);
       
       expect(parentSelector).toBe('/nested');
     });
 
     test('should return root for document root parent', () => {
-      const parentSelector = (fsHandler as any).getParentSelector(tempDir);
+      const parentSelector = (fsHandler as unknown as FileSystemHandlerTestInterface).getParentSelector(tempDir);
       
       expect(parentSelector).toBe('/');
     });
