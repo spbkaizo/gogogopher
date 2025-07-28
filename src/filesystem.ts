@@ -12,7 +12,7 @@ export class FileSystemHandler {
     private config: ServerConfig,
     security?: SecurityManager
   ) {
-    this.security = security || new SecurityManager();
+    this.security = security || new SecurityManager(config.allowedDataDirectory);
   }
 
   public async getFileStats(filePath: string): Promise<Stats> {
