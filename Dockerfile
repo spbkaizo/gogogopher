@@ -26,6 +26,9 @@ RUN addgroup -g 1001 -S gopher && \
 # Install netcat for health checks and testing
 RUN apk add --no-cache netcat-openbsd
 
+# Update npm to latest version to fix CVE vulnerabilities
+RUN npm install -g npm@latest
+
 # Set working directory
 WORKDIR /app
 
