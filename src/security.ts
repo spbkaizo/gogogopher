@@ -4,10 +4,11 @@ import { GopherRequest, SecurityOptions, GopherError } from './types.js';
 export class SecurityManager {
   private rateLimitMap = new Map<string, { count: number; resetTime: number }>();
   private options: SecurityOptions;
+  private allowedDataDirectory: string;
 
-  constructor(options?: Partial<SecurityOptions>) {
+  constructor(allowedDataDirectory: string, options?: Partial<SecurityOptions>) {
+    this.allowedDataDirectory = path.resolve(allowedDataDirectory);
     this.options = {
-      enablePathTraversalProtection: true,
       maxFileSize: 10 * 1024 * 1024, // 10MB
       rateLimitRequests: 100,
       rateLimitWindow: 60 * 1000, // 1 minute
@@ -18,6 +19,7 @@ export class SecurityManager {
   public isRequestAllowed(request: GopherRequest, clientIP: string): boolean {
     try {
       this.validatePathTraversal(request.selector);
+      this.validateAllowedPath(request.selector);
       this.checkRateLimit(clientIP);
       this.validateSelector(request.selector);
       return true;
@@ -34,10 +36,6 @@ export class SecurityManager {
   }
 
   private validatePathTraversal(selector: string): void {
-    if (!this.options.enablePathTraversalProtection) {
-      return;
-    }
-
     const normalizedPath = path.posix.normalize(selector);
     
     if (normalizedPath.includes('..')) {
@@ -66,6 +64,21 @@ export class SecurityManager {
           403
         );
       }
+    }
+  }
+
+  private validateAllowedPath(selector: string): void {
+    // Normalize and resolve the requested path
+    const normalizedSelector = path.posix.normalize(selector || '/');
+    const requestedPath = path.resolve(this.allowedDataDirectory, normalizedSelector.substring(1));
+    
+    // Ensure the resolved path is within the allowed data directory
+    if (!requestedPath.startsWith(this.allowedDataDirectory)) {
+      throw new GopherError(
+        'Access denied: Path outside allowed directory',
+        'PATH_NOT_ALLOWED',
+        403
+      );
     }
   }
 
@@ -116,30 +129,9 @@ export class SecurityManager {
         400
       );
     }
-
-    const reservedPaths = [
-      '/proc',
-      '/sys',
-      '/dev',
-      '/etc/passwd',
-      '/etc/shadow',
-      '/root',
-      '/home',
-    ];
-
-    const normalizedSelector = path.posix.normalize(selector.toLowerCase());
-    for (const reservedPath of reservedPaths) {
-      if (normalizedSelector.startsWith(reservedPath)) {
-        throw new GopherError(
-          'Access to system paths not allowed',
-          'SYSTEM_PATH_FORBIDDEN',
-          403
-        );
-      }
-    }
   }
 
-  public sanitizePath(inputPath: string, documentRoot: string): string {
+  public sanitizePath(inputPath: string): string {
     let sanitized = inputPath;
 
     sanitized = sanitized.replace(/[^\w\s\-_./]/g, '');
@@ -150,12 +142,12 @@ export class SecurityManager {
       sanitized = '/' + sanitized;
     }
 
-    const resolvedPath = path.resolve(documentRoot, sanitized.substring(1));
+    const resolvedPath = path.resolve(this.allowedDataDirectory, sanitized.substring(1));
     
-    if (!resolvedPath.startsWith(path.resolve(documentRoot))) {
+    if (!resolvedPath.startsWith(this.allowedDataDirectory)) {
       throw new GopherError(
-        'Path outside document root',
-        'PATH_OUTSIDE_ROOT',
+        'Path outside allowed directory',
+        'PATH_OUTSIDE_ALLOWED',
         403
       );
     }

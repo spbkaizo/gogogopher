@@ -47,6 +47,8 @@ spec:
               value: {{ .Values.config.hostname | quote }}
             - name: GOPHER_DOCUMENT_ROOT
               value: {{ .Values.config.documentRoot | quote }}
+            - name: GOPHER_ALLOWED_DATA_DIRECTORY
+              value: {{ .Values.config.allowedDataDirectory | quote }}
             - name: GOPHER_MAX_REQUEST_SIZE
               value: {{ .Values.config.maxRequestSize | quote }}
             - name: GOPHER_CONNECTION_TIMEOUT
