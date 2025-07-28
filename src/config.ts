@@ -11,12 +11,11 @@ export class ConfigManager {
   private static readonly DEFAULT_CONFIG: ServerConfig = {
     port: 70,
     hostname: '0.0.0.0',
-    documentRoot: './gopher-content',
+    documentRoot: './data',
     maxRequestSize: 1024,
     connectionTimeout: 30000,
     enableLogging: true,
-    allowedPaths: [],
-    blockedPaths: ['/etc', '/proc', '/sys', '/dev', '/root', '/home'],
+    allowedDataDirectory: './data',
   };
 
   public static createDefaultConfig(): ServerConfig {
@@ -82,6 +81,10 @@ export class ConfigManager {
       config.documentRoot = process.env.GOPHER_DOCUMENT_ROOT;
     }
 
+    if (process.env.GOPHER_ALLOWED_DATA_DIRECTORY) {
+      config.allowedDataDirectory = process.env.GOPHER_ALLOWED_DATA_DIRECTORY;
+    }
+
     if (process.env.GOPHER_MAX_REQUEST_SIZE) {
       const size = parseInt(process.env.GOPHER_MAX_REQUEST_SIZE, 10);
       if (!isNaN(size) && size > 0) {
@@ -110,8 +113,6 @@ export class ConfigManager {
     return {
       ...baseConfig,
       ...overrides,
-      allowedPaths: overrides.allowedPaths || baseConfig.allowedPaths,
-      blockedPaths: overrides.blockedPaths || baseConfig.blockedPaths,
     };
   }
 
@@ -128,6 +129,10 @@ export class ConfigManager {
 
     if (!config.documentRoot || config.documentRoot.trim() === '') {
       errors.push('Document root is required');
+    }
+
+    if (!config.allowedDataDirectory || config.allowedDataDirectory.trim() === '') {
+      errors.push('Allowed data directory is required');
     }
 
     if (config.maxRequestSize < 1) {
@@ -172,15 +177,13 @@ export class ConfigManager {
       server: {
         port: 70,
         hostname: 'localhost',
-        documentRoot: './gopher-content',
+        documentRoot: './data',
         maxRequestSize: 1024,
         connectionTimeout: 30000,
         enableLogging: true,
-        allowedPaths: [],
-        blockedPaths: ['/etc', '/proc', '/sys', '/dev', '/root', '/home'],
+        allowedDataDirectory: './data',
       },
       security: {
-        enablePathTraversalProtection: true,
         maxFileSize: 10485760, // 10MB
         rateLimitRequests: 100,
         rateLimitWindow: 60000, // 1 minute

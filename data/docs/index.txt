@@ -1,0 +1,38 @@
+GoGoGopher Documentation
+========================
+
+Welcome to the GoGoGopher documentation, accessible via the Gopher protocol!
+
+Available Documentation:
+-------------------------
+
+README.txt         - Complete project overview, installation, and usage guide
+DEPLOYMENT.txt     - Production deployment with Docker and Kubernetes  
+CHANGELOG.txt      - Version history and release notes
+
+Quick Links:
+------------
+
+Getting Started:
+  1. Read README.txt for installation instructions
+  2. See examples/ directory for sample content
+  3. Use help.txt for basic Gopher protocol information
+
+Production Deployment:
+  1. See DEPLOYMENT.txt for container and Kubernetes setup
+  2. Review security features in README.txt
+  3. Check CHANGELOG.txt for latest updates
+
+About GoGoGopher:
+  - RFC 1436 compliant Gopher server
+  - Written in TypeScript with modern security practices
+  - Production-ready with Docker and Kubernetes support
+  - Always-on security with allowlist-only access control
+
+Navigation:
+-----------
+Use ".." to go back to the parent directory
+Select any file to view its contents
+Browse /examples/ for sample Gopher content
+
+For more information, visit: https://github.com/spbkaizo/gogogopher

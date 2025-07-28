@@ -110,16 +110,9 @@ affinity: {}
 config:
   port: 70
   hostname: "0.0.0.0"
-  documentRoot: "/app/gopher-content"
+  documentRoot: "/app/data"
+  allowedDataDirectory: "/app/data"
   maxRequestSize: 1024
   connectionTimeout: 30000
   enableLogging: true
   logLevel: "INFO"
-  allowedPaths: []
-  blockedPaths:
-    - "/etc"
-    - "/proc"
-    - "/sys"
-    - "/dev"
-    - "/root"
-    - "/home"

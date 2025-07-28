@@ -36,8 +36,8 @@ RUN npm ci --only=production --silent && \
 # Copy built application from builder stage
 COPY --from=builder /app/dist ./dist
 
-# Copy gopher content directory
-COPY --from=builder /app/gopher-content ./gopher-content
+# Copy data directory
+COPY --from=builder /app/data ./data
 
 # Change ownership to non-root user
 RUN chown -R gopher:gopher /app

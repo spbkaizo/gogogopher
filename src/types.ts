@@ -45,12 +45,10 @@ export interface ServerConfig {
   maxRequestSize: number;
   connectionTimeout: number;
   enableLogging: boolean;
-  allowedPaths: string[];
-  blockedPaths: string[];
+  allowedDataDirectory: string;
 }
 
 export interface SecurityOptions {
-  enablePathTraversalProtection: boolean;
   maxFileSize: number;
   rateLimitRequests: number;
   rateLimitWindow: number;

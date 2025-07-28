@@ -22,7 +22,7 @@ export class GopherServer extends EventEmitter {
     super();
     this.protocolHandler = protocolHandler || new ProtocolHandler(config);
     this.logger = logger || new Logger(config.enableLogging);
-    this.security = security || new SecurityManager();
+    this.security = security || new SecurityManager(config.allowedDataDirectory);
     this.server = this.createServer();
   }
 
