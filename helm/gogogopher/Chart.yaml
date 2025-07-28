@@ -1,0 +1,19 @@
+apiVersion: v2
+name: gogogopher
+description: A secure, RFC-compliant Gopher server written in TypeScript
+version: 1.0.0
+appVersion: "1.0.0"
+type: application
+keywords:
+  - gopher
+  - server
+  - rfc1436
+  - tcp
+home: https://github.com/your-org/gogogopher
+sources:
+  - https://github.com/your-org/gogogopher
+maintainers:
+  - name: GoGoGopher Team
+    email: maintainers@example.com
+annotations:
+  category: Networking

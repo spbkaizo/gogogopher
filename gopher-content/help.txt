@@ -1,0 +1,43 @@
+Gopher Server Help
+==================
+
+How to use this Gopher server:
+
+Navigation:
+- Directories are marked with a "/" after the name
+- Text files can be viewed by selecting them
+- Use ".." to go up one directory level
+
+Item Types:
+0 - Text file
+1 - Directory/menu
+2 - CSO phone book
+3 - Error message
+7 - Search server
+9 - Binary file
+g - GIF image
+I - Image file
+h - HTML file
+
+Using a Gopher Client:
+You can access this server using various Gopher clients:
+- Lynx web browser (supports gopher://)
+- Dedicated Gopher clients like Gopher for modern systems
+- Telnet to port 70 for manual access
+
+Command Line Usage:
+To manually connect via telnet:
+  telnet [hostname] 70
+  
+Then type the path you want to access followed by Enter.
+Leave blank and press Enter to access the root directory.
+
+Server Configuration:
+This server supports:
+- Custom document root
+- Security settings
+- Rate limiting
+- Logging configuration
+- Multiple file types
+
+For technical documentation, see the source code or README files.

@@ -1,0 +1,67 @@
+version: '3.8'
+
+services:
+  gogogopher:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    container_name: gogogopher-server
+    ports:
+      - "70:70"
+      - "8070:70"  # Alternative port for testing
+    environment:
+      - GOPHER_PORT=70
+      - GOPHER_HOSTNAME=0.0.0.0
+      - GOPHER_DOCUMENT_ROOT=/app/gopher-content
+      - GOPHER_ENABLE_LOGGING=true
+      - GOPHER_LOG_LEVEL=INFO
+      - GOPHER_MAX_REQUEST_SIZE=1024
+      - GOPHER_CONNECTION_TIMEOUT=30000
+    volumes:
+      # Mount custom content directory (optional)
+      # - ./custom-content:/app/gopher-content:ro
+      # Mount logs directory
+      - gopher-logs:/app/logs
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "70"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    networks:
+      - gopher-network
+
+  # Development service with live reload
+  gogogopher-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: builder
+    container_name: gogogopher-dev
+    ports:
+      - "8071:70"
+    environment:
+      - GOPHER_PORT=70
+      - GOPHER_HOSTNAME=0.0.0.0
+      - GOPHER_DOCUMENT_ROOT=/app/gopher-content
+      - GOPHER_ENABLE_LOGGING=true
+      - GOPHER_LOG_LEVEL=DEBUG
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - gopher-logs:/app/logs
+    command: npm run dev
+    networks:
+      - gopher-network
+    profiles:
+      - dev
+
+volumes:
+  gopher-logs:
+    driver: local
+
+networks:
+  gopher-network:
+    driver: bridge

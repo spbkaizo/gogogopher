@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "gogogopher.fullname" . }}
+  labels:
+    {{- include "gogogopher.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: {{ .Values.service.targetPort }}
+      protocol: {{ .Values.service.protocol }}
+      name: gopher
+      {{- if and (eq .Values.service.type "NodePort") .Values.loadBalancer.nodePort }}
+      nodePort: {{ .Values.loadBalancer.nodePort }}
+      {{- end }}
+  selector:
+    {{- include "gogogopher.selectorLabels" . | nindent 4 }}
+
+{{- if .Values.loadBalancer.enabled }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "gogogopher.fullname" . }}-lb
+  labels:
+    {{- include "gogogopher.labels" . | nindent 4 }}
+    app.kubernetes.io/component: loadbalancer
+spec:
+  type: {{ .Values.loadBalancer.type }}
+  ports:
+    - port: {{ .Values.loadBalancer.port }}
+      targetPort: {{ .Values.service.targetPort }}
+      protocol: {{ .Values.service.protocol }}
+      name: gopher
+      {{- if and (eq .Values.loadBalancer.type "NodePort") .Values.loadBalancer.nodePort }}
+      nodePort: {{ .Values.loadBalancer.nodePort }}
+      {{- end }}
+  selector:
+    {{- include "gogogopher.selectorLabels" . | nindent 4 }}
+{{- end }}

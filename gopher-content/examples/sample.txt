@@ -1,0 +1,21 @@
+Sample Text File
+================
+
+This is a sample text file to demonstrate the Gopher server's
+file serving capabilities.
+
+The Gopher protocol serves plain text files like this one without
+any special formatting or markup. This makes it ideal for serving
+documentation, articles, and other text-based content.
+
+Key characteristics of Gopher text files:
+- Plain text format
+- No HTML markup
+- Line-based structure
+- Maximum compatibility across systems
+
+This server correctly serves text files with proper encoding
+and handles various file types according to their extensions.
+
+You can create your own content by adding files to the document
+root directory configured for this server.

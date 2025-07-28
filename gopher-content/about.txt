@@ -1,0 +1,32 @@
+Welcome to GoGoGopher Server
+===========================
+
+This is a secure, RFC 1436 compliant Gopher server written in TypeScript.
+
+Features:
+- Full RFC 1436 compliance
+- Path traversal protection
+- Rate limiting
+- Configurable security settings
+- Comprehensive logging
+- CLI interface
+- Search functionality
+
+The Gopher protocol was developed at the University of Minnesota and published
+as RFC 1436 in 1993. It provides a simple menu-driven interface for accessing
+information over the Internet.
+
+This server implementation includes modern security features while maintaining
+compatibility with the original Gopher protocol specification.
+
+For more information about the Gopher protocol, visit:
+gopher://gopher.floodgap.com/
+
+Server Information:
+- Written in TypeScript
+- Runs on Node.js
+- Includes comprehensive security features
+- Supports directory browsing and file serving
+- Configurable via JSON config files or environment variables
+
+Thank you for using GoGoGopher!

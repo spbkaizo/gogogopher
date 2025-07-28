@@ -1,0 +1,125 @@
+# Default values for gogogopher
+replicaCount: 1
+
+image:
+  repository: ghcr.io/your-org/gogogopher
+  pullPolicy: IfNotPresent
+  tag: ""
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  automount: true
+  annotations: {}
+  name: ""
+
+podAnnotations: {}
+podLabels: {}
+
+podSecurityContext:
+  fsGroup: 1001
+  runAsNonRoot: true
+  runAsUser: 1001
+
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+    - ALL
+  readOnlyRootFilesystem: false
+  runAsNonRoot: true
+  runAsUser: 1001
+
+service:
+  type: ClusterIP
+  port: 70
+  targetPort: 70
+  protocol: TCP
+
+# Ingress for TCP traffic (requires special ingress controller)
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  # nginx.ingress.kubernetes.io/tcp-services-configmap: "default/tcp-services"
+  hosts:
+    - host: gopher.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+
+# For LoadBalancer or NodePort services
+loadBalancer:
+  enabled: false
+  type: LoadBalancer
+  port: 70
+  nodePort: 30070
+
+resources:
+  limits:
+    cpu: 200m
+    memory: 256Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+livenessProbe:
+  enabled: true
+  tcpSocket:
+    port: 70
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 5
+  successThreshold: 1
+  failureThreshold: 3
+
+readinessProbe:
+  enabled: true
+  tcpSocket:
+    port: 70
+  initialDelaySeconds: 5
+  periodSeconds: 10
+  timeoutSeconds: 5
+  successThreshold: 1
+  failureThreshold: 3
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
+
+# Additional volumes on the output Deployment definition
+volumes: []
+
+# Additional volumeMounts on the output Deployment definition
+volumeMounts: []
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+# Gopher server configuration
+config:
+  port: 70
+  hostname: "0.0.0.0"
+  documentRoot: "/app/gopher-content"
+  maxRequestSize: 1024
+  connectionTimeout: 30000
+  enableLogging: true
+  logLevel: "INFO"
+  allowedPaths: []
+  blockedPaths:
+    - "/etc"
+    - "/proc"
+    - "/sys"
+    - "/dev"
+    - "/root"
+    - "/home"

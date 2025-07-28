@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "gogogopher.fullname" . }}-config
+  labels:
+    {{- include "gogogopher.labels" . | nindent 4 }}
+data:
+  GOPHER_PORT: {{ .Values.config.port | quote }}
+  GOPHER_HOSTNAME: {{ .Values.config.hostname | quote }}
+  GOPHER_DOCUMENT_ROOT: {{ .Values.config.documentRoot | quote }}
+  GOPHER_MAX_REQUEST_SIZE: {{ .Values.config.maxRequestSize | quote }}
+  GOPHER_CONNECTION_TIMEOUT: {{ .Values.config.connectionTimeout | quote }}
+  GOPHER_ENABLE_LOGGING: {{ .Values.config.enableLogging | quote }}
+  GOPHER_LOG_LEVEL: {{ .Values.config.logLevel | quote }}
+  {{- if .Values.config.allowedPaths }}
+  GOPHER_ALLOWED_PATHS: {{ .Values.config.allowedPaths | join "," | quote }}
+  {{- end }}
+  {{- if .Values.config.blockedPaths }}
+  GOPHER_BLOCKED_PATHS: {{ .Values.config.blockedPaths | join "," | quote }}
+  {{- end }}
