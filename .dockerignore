@@ -57,11 +57,12 @@ helm/
 *.kubeconfig
 *.tgz
 
-# Documentation
+# Documentation (but keep data/docs)
 README.md
 CHANGELOG.md
 CONTRIBUTING.md
 docs/
+!data/docs/
 
 # CI/CD
 .github/

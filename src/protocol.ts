@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { GopherRequest, GopherResponse, ServerConfig, GopherError, GopherItemType } from './types.js';
+import { GopherRequest, GopherResponse, ServerConfig, GopherError, GopherItemType, GopherItem } from './types.js';
 import { FileSystemHandler } from './filesystem.js';
 import { Logger } from './logger.js';
 
@@ -175,5 +175,26 @@ export class ProtocolHandler {
         },
       ],
     };
+  }
+
+  public parseRequest(rawRequest: string): GopherRequest {
+    const trimmedData = rawRequest.trim();
+    const parts = trimmedData.split('\t');
+    
+    return {
+      selector: parts[0] || '/',
+      searchTerms: parts[1] || undefined,
+    };
+  }
+
+  public formatDirectoryListing(items: GopherItem[]): string {
+    let result = '';
+    
+    for (const item of items) {
+      result += `${item.type}${item.displayString}\t${item.selector}\t${item.hostname}\t${item.port}\r\n`;
+    }
+    
+    result += '.\r\n'; // Menu terminator
+    return result;
   }
 }

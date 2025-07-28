@@ -47,7 +47,7 @@ describe('ProtocolHandler', () => {
       const parsed = protocolHandler.parseRequest(rawRequest);
       
       expect(parsed.selector).toBe('/test.txt');
-      expect(parsed.searchTerms).toEqual([]);
+      expect(parsed.searchTerms).toBeUndefined();
     });
 
     test('should parse root directory request', () => {
@@ -55,7 +55,7 @@ describe('ProtocolHandler', () => {
       const parsed = protocolHandler.parseRequest(rawRequest);
       
       expect(parsed.selector).toBe('/');
-      expect(parsed.searchTerms).toEqual([]);
+      expect(parsed.searchTerms).toBeUndefined();
     });
 
     test('should parse search request with terms', () => {
@@ -159,7 +159,7 @@ describe('ProtocolHandler', () => {
     test('should format directory listing correctly (RFC 1436)', async () => {
       const response = await protocolHandler.handleRequest({ 
         selector: '/', 
-        searchTerms: [] 
+        searchTerms: undefined 
       });
 
       expect(response.isDirectory).toBe(true);
@@ -179,7 +179,7 @@ describe('ProtocolHandler', () => {
     test('should format file response correctly', async () => {
       const response = await protocolHandler.handleRequest({ 
         selector: '/test.txt', 
-        searchTerms: [] 
+        searchTerms: undefined 
       });
 
       expect(response.isDirectory).toBe(false);
@@ -190,7 +190,7 @@ describe('ProtocolHandler', () => {
     test('should handle binary files correctly', async () => {
       const response = await protocolHandler.handleRequest({ 
         selector: '/binary.zip', 
-        searchTerms: [] 
+        searchTerms: undefined 
       });
 
       expect(response.isDirectory).toBe(false);
@@ -236,7 +236,7 @@ describe('ProtocolHandler', () => {
     test('should handle file not found gracefully', async () => {
       const response = await protocolHandler.handleRequest({ 
         selector: '/nonexistent.txt', 
-        searchTerms: [] 
+        searchTerms: undefined 
       });
 
       expect(response.isDirectory).toBe(false);
@@ -254,7 +254,7 @@ describe('ProtocolHandler', () => {
         
         const response = await protocolHandler.handleRequest({ 
           selector: '/restricted.txt', 
-          searchTerms: [] 
+          searchTerms: undefined 
         });
 
         expect(response.isDirectory).toBe(false);
@@ -267,11 +267,11 @@ describe('ProtocolHandler', () => {
     });
 
     test('should return error item for invalid requests', () => {
-      const errorItems = protocolHandler.createErrorResponse('Test error message');
+      const errorResponse = protocolHandler.createErrorResponse('Test error message');
       
-      expect(errorItems.length).toBe(1);
-      expect(errorItems[0].type).toBe(GopherItemType.ERROR);
-      expect(errorItems[0].displayString).toContain('Test error message');
+      expect(errorResponse.items?.length).toBe(1);
+      expect(errorResponse.items?.[0].type).toBe(GopherItemType.ERROR);
+      expect(errorResponse.items?.[0].displayString).toContain('Test error message');
     });
   });
 
@@ -320,7 +320,7 @@ describe('ProtocolHandler', () => {
       const testItems: GopherItem[] = [];
       const formatted = protocolHandler.formatDirectoryListing(testItems);
       
-      expect(formatted).toEndWith('.\r\n');
+      expect(formatted.endsWith('.\r\n')).toBe(true);
     });
 
     test('should handle special characters in display strings', () => {
@@ -350,7 +350,7 @@ describe('ProtocolHandler', () => {
 
       const response = await protocolHandler.handleRequest({ 
         selector: '/', 
-        searchTerms: ['search'] 
+        searchTerms: 'search' 
       });
 
       expect(response.isDirectory).toBe(true);
@@ -368,7 +368,7 @@ describe('ProtocolHandler', () => {
     test('should return empty results for no matches', async () => {
       const response = await protocolHandler.handleRequest({ 
         selector: '/', 
-        searchTerms: ['nonexistent'] 
+        searchTerms: 'nonexistent' 
       });
 
       expect(response.isDirectory).toBe(true);

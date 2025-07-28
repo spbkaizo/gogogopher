@@ -31,10 +31,10 @@ describe('SecurityManager', () => {
   describe('Path Traversal Protection', () => {
     test('should block basic path traversal attempts', () => {
       const maliciousRequests: GopherRequest[] = [
-        { selector: '../../../etc/passwd', searchTerms: [] },
-        { selector: '..\\..\\windows\\system32', searchTerms: [] },
-        { selector: '/test/../../../etc/shadow', searchTerms: [] },
-        { selector: 'test/../../etc/passwd', searchTerms: [] }
+        { selector: '../../../etc/passwd', searchTerms: undefined },
+        { selector: '..\\..\\windows\\system32', searchTerms: undefined },
+        { selector: '/test/../../../etc/shadow', searchTerms: undefined },
+        { selector: 'test/../../etc/passwd', searchTerms: undefined }
       ];
 
       maliciousRequests.forEach(request => {
@@ -46,9 +46,9 @@ describe('SecurityManager', () => {
 
     test('should block encoded path traversal attempts', () => {
       const encodedRequests: GopherRequest[] = [
-        { selector: '%2e%2e%2f%2e%2e%2fetc%2fpasswd', searchTerms: [] },
-        { selector: '..%2f..%2fetc%2fpasswd', searchTerms: [] },
-        { selector: '%2e%2e\\%2e%2e\\etc\\passwd', searchTerms: [] }
+        { selector: '%2e%2e%2f%2e%2e%2fetc%2fpasswd', searchTerms: undefined },
+        { selector: '..%2f..%2fetc%2fpasswd', searchTerms: undefined },
+        { selector: '%2e%2e\\%2e%2e\\etc\\passwd', searchTerms: undefined }
       ];
 
       encodedRequests.forEach(request => {
@@ -60,8 +60,8 @@ describe('SecurityManager', () => {
 
     test('should block null byte injection', () => {
       const nullByteRequests: GopherRequest[] = [
-        { selector: '/test\0../../../etc/passwd', searchTerms: [] },
-        { selector: '/test.txt\0.exe', searchTerms: [] }
+        { selector: '/test\0../../../etc/passwd', searchTerms: undefined },
+        { selector: '/test.txt\0.exe', searchTerms: undefined }
       ];
 
       nullByteRequests.forEach(request => {
@@ -73,10 +73,10 @@ describe('SecurityManager', () => {
 
     test('should allow legitimate paths', () => {
       const legitimateRequests: GopherRequest[] = [
-        { selector: '/test.txt', searchTerms: [] },
-        { selector: '/subdir/nested.txt', searchTerms: [] },
-        { selector: '/', searchTerms: [] },
-        { selector: '/subdir', searchTerms: [] }
+        { selector: '/test.txt', searchTerms: undefined },
+        { selector: '/subdir/nested.txt', searchTerms: undefined },
+        { selector: '/', searchTerms: undefined },
+        { selector: '/subdir', searchTerms: undefined }
       ];
 
       legitimateRequests.forEach(request => {
@@ -97,7 +97,7 @@ describe('SecurityManager', () => {
       ];
 
       validPaths.forEach(selector => {
-        const request: GopherRequest = { selector, searchTerms: [] };
+        const request: GopherRequest = { selector, searchTerms: undefined };
         expect(() => {
           securityManager.isRequestAllowed(request, '127.0.0.1');
         }).not.toThrow();
@@ -113,7 +113,7 @@ describe('SecurityManager', () => {
       ];
 
       blockedPaths.forEach(selector => {
-        const request: GopherRequest = { selector, searchTerms: [] };
+        const request: GopherRequest = { selector, searchTerms: undefined };
         expect(() => {
           securityManager.isRequestAllowed(request, '127.0.0.1');
         }).toThrow(GopherError);
@@ -121,7 +121,7 @@ describe('SecurityManager', () => {
     });
 
     test('should validate resolved paths stay within bounds', () => {
-      const request: GopherRequest = { selector: '/test/../../../etc/passwd', searchTerms: [] };
+      const request: GopherRequest = { selector: '/test/../../../etc/passwd', searchTerms: undefined };
       
       expect(() => {
         securityManager.isRequestAllowed(request, '127.0.0.1');
@@ -131,7 +131,7 @@ describe('SecurityManager', () => {
 
   describe('Rate Limiting', () => {
     test('should allow requests within rate limit', () => {
-      const request: GopherRequest = { selector: '/test.txt', searchTerms: [] };
+      const request: GopherRequest = { selector: '/test.txt', searchTerms: undefined };
       const clientIP = '192.168.1.100';
 
       // Should allow multiple requests within limit
@@ -143,7 +143,7 @@ describe('SecurityManager', () => {
     });
 
     test('should block requests exceeding rate limit', () => {
-      const request: GopherRequest = { selector: '/test.txt', searchTerms: [] };
+      const request: GopherRequest = { selector: '/test.txt', searchTerms: undefined };
       const clientIP = '192.168.1.101';
 
       // Make requests up to the limit (default is 100)
@@ -158,7 +158,7 @@ describe('SecurityManager', () => {
     });
 
     test('should track rate limits per IP separately', () => {
-      const request: GopherRequest = { selector: '/test.txt', searchTerms: [] };
+      const request: GopherRequest = { selector: '/test.txt', searchTerms: undefined };
       const clientIP1 = '192.168.1.102';
       const clientIP2 = '192.168.1.103';
 
@@ -185,7 +185,7 @@ describe('SecurityManager', () => {
       expect(initialStatus.remaining).toBe(100);
 
       // Make some requests
-      const request: GopherRequest = { selector: '/test.txt', searchTerms: [] };
+      const request: GopherRequest = { selector: '/test.txt', searchTerms: undefined };
       for (let i = 0; i < 5; i++) {
         securityManager.isRequestAllowed(request, clientIP);
       }
@@ -198,7 +198,7 @@ describe('SecurityManager', () => {
   describe('Input Validation', () => {
     test('should reject selectors that are too long', () => {
       const longSelector = '/test' + 'a'.repeat(300); // Over 255 chars
-      const request: GopherRequest = { selector: longSelector, searchTerms: [] };
+      const request: GopherRequest = { selector: longSelector, searchTerms: undefined };
 
       expect(() => {
         securityManager.isRequestAllowed(request, '127.0.0.1');
@@ -207,10 +207,10 @@ describe('SecurityManager', () => {
 
     test('should reject selectors with forbidden control characters', () => {
       const forbiddenRequests: GopherRequest[] = [
-        { selector: '/test\x01.txt', searchTerms: [] },
-        { selector: '/test\x02.txt', searchTerms: [] },
-        { selector: '/test\x1f.txt', searchTerms: [] },
-        { selector: '/test\x7f.txt', searchTerms: [] }
+        { selector: '/test\x01.txt', searchTerms: undefined },
+        { selector: '/test\x02.txt', searchTerms: undefined },
+        { selector: '/test\x1f.txt', searchTerms: undefined },
+        { selector: '/test\x7f.txt', searchTerms: undefined }
       ];
 
       forbiddenRequests.forEach(request => {
@@ -222,9 +222,9 @@ describe('SecurityManager', () => {
 
     test('should allow normal ASCII characters', () => {
       const validRequests: GopherRequest[] = [
-        { selector: '/test-file_123.txt', searchTerms: [] },
-        { selector: '/My Documents/file.txt', searchTerms: [] },
-        { selector: '/folder with spaces/file.txt', searchTerms: [] }
+        { selector: '/test-file_123.txt', searchTerms: undefined },
+        { selector: '/My Documents/file.txt', searchTerms: undefined },
+        { selector: '/folder with spaces/file.txt', searchTerms: undefined }
       ];
 
       validRequests.forEach(request => {

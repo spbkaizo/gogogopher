@@ -261,7 +261,7 @@ describe('FileSystemHandler', () => {
       const formatted = (fsHandler as any).formatDisplayString(longName, false);
       
       expect(formatted.length).toBeLessThanOrEqual(67); // Max length
-      expect(formatted).toEndWith('...');
+      expect(formatted.endsWith('...')).toBe(true);
     });
 
     test('should not truncate short filenames', () => {

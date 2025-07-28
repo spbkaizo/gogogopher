@@ -352,14 +352,14 @@ describe('ConfigManager', () => {
       expect(exampleConfig.server).toBeDefined();
       expect(exampleConfig.security).toBeDefined();
       
-      expect(exampleConfig.server.port).toBe(70);
-      expect(exampleConfig.server.hostname).toBe('localhost');
-      expect(exampleConfig.server.documentRoot).toBe('./data');
-      expect(exampleConfig.server.allowedDataDirectory).toBe('./data');
+      expect(exampleConfig.server?.port).toBe(70);
+      expect(exampleConfig.server?.hostname).toBe('localhost');
+      expect(exampleConfig.server?.documentRoot).toBe('./data');
+      expect(exampleConfig.server?.allowedDataDirectory).toBe('./data');
       
-      expect(exampleConfig.security.maxFileSize).toBe(10485760);
-      expect(exampleConfig.security.rateLimitRequests).toBe(100);
-      expect(exampleConfig.security.rateLimitWindow).toBe(60000);
+      expect(exampleConfig.security?.maxFileSize).toBe(10485760);
+      expect(exampleConfig.security?.rateLimitRequests).toBe(100);
+      expect(exampleConfig.security?.rateLimitWindow).toBe(60000);
     });
 
     test('should create serializable configuration', () => {
