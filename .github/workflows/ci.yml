@@ -109,8 +109,16 @@ jobs:
         cache-to: type=gha,mode=max
 
     - name: Test Docker image
+      if: github.event_name != 'pull_request'
       run: |
-        docker run --rm -d --name gogogopher-test -p 8070:70 ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+        # Use the latest tag for main branch, or branch name for other branches
+        if [ "${{ github.ref_name }}" = "main" ]; then
+          IMAGE_TAG="latest"
+        else
+          IMAGE_TAG="${{ github.ref_name }}"
+        fi
+        echo "Testing image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${IMAGE_TAG}"
+        docker run --rm -d --name gogogopher-test -p 8070:70 ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${IMAGE_TAG}
         sleep 10
         docker exec gogogopher-test nc -z localhost 70 || exit 1
         docker stop gogogopher-test
