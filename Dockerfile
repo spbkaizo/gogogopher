@@ -23,6 +23,9 @@ FROM node:20-alpine AS production
 RUN addgroup -g 1001 -S gopher && \
     adduser -S gopher -u 1001
 
+# Install netcat for health checks and testing
+RUN apk add --no-cache netcat-openbsd
+
 # Set working directory
 WORKDIR /app
 

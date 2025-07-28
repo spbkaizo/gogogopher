@@ -134,7 +134,7 @@ jobs:
           exit 1
         fi
         
-        # Test connectivity
+        # Test connectivity (netcat is now available in the container)
         echo "Testing connectivity..."
         if docker exec gogogopher-test nc -z localhost 70; then
           echo "✅ Gopher server is responding on port 70"
